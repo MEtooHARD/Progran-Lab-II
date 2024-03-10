@@ -18,10 +18,8 @@ class Point {
 };
 
 class Segment {
- private:
-  Point *P1, *P2;
-
  public:
+  Point *P1, *P2;
   Segment(Point *p1, Point *p2) {
     this->P1 = p1;
     this->P2 = p2;
@@ -36,14 +34,13 @@ int main() {
   int amount;
   cin >> amount;
   double x1, y1, x2, y2;
-  Point *p1 = new Point(), *p2 = new Point();
-  Segment *segment = new Segment(p1, p2);
+  Segment *segment = new Segment(new Point(), new Point());
   for (int i = 0; i < amount; i++) {
     cin >> x1 >> y1 >> x2 >> y2;
-    p1->setX(x1);
-    p1->setY(y1);
-    p2->setX(x2);
-    p2->setY(y2);
+    segment->P1->setY(y1);
+    segment->P1->setX(x1);
+    segment->P2->setX(x2);
+    segment->P2->setY(y2);
     cout << segment->length() << endl;
   }
 }
