@@ -19,14 +19,11 @@ class Point {
 
 class Segment {
  public:
-  Point *P1, *P2;
-  Segment(Point *p1, Point *p2) {
-    this->P1 = p1;
-    this->P2 = p2;
-  }
+  Point P1, P2;
+  Segment(Point *p1, Point *p2) {}
   double length() {
-    return sqrt(pow(this->P1->getX() - this->P2->getX(), 2) +
-                pow(this->P1->getY() - this->P2->getY(), 2));
+    return sqrt(pow(this->P1.getX() - this->P2.getX(), 2) +
+                pow(this->P1.getY() - this->P2.getY(), 2));
   }
 };
 
@@ -34,13 +31,13 @@ int main() {
   int amount;
   cin >> amount;
   double x1, y1, x2, y2;
-  Segment *segment = new Segment(new Point(), new Point());
+  Segment segment((new Point()), (new Point()));
   for (int i = 0; i < amount; i++) {
     cin >> x1 >> y1 >> x2 >> y2;
-    segment->P1->setY(y1);
-    segment->P1->setX(x1);
-    segment->P2->setX(x2);
-    segment->P2->setY(y2);
-    cout << segment->length() << endl;
+    segment.P1.setY(y1);
+    segment.P1.setX(x1);
+    segment.P2.setX(x2);
+    segment.P2.setY(y2);
+    cout << segment.length() << endl;
   }
 }
