@@ -20,23 +20,20 @@ class Segment {
 
 class Path {
  public:
-  Segment *segs;
+  Segment *connectedSegs;
   int amount;
-  Path(Segment *segs, int amount) {
-    this->segs = segs;
+  Path(Segment *incomingSegs, int amount) {
+    connectedSegs = (Segment *)malloc(sizeof(Segment *) * amount);
     this->amount = amount;
     double length = 0;
-    bool connected = true;
-    int nowChecking = 0;
-    while (connected && nowChecking < amount) {
+    bool connection = true;
+    int nowChecking = 0, head = 0, tail = 0, headEnd, tailEnd;
+    while (connection && nowChecking < amount) {
       nowChecking++;
-      int lastConnectedPoint;
-      for (int i = 0; i < amount; i++) {
-        if (i == nowChecking) continue;
+
+      for (int i = 1; i < amount; i++) {
+        Segment now = incomingSegs[i];
         if (0) {
-        } else {
-          connected = false;
-          break;
         }
       }
     }
@@ -45,4 +42,8 @@ class Path {
 
 bool pointOverlap(Point p1, Point p2) {
   return p1.getX() == p2.getX() && p1.getY() == p2.getY();
+}
+
+bool validConnection(Segment seg1, Segment seg2, int seg1End, int seg2End) {
+  return seg1.getEnd(seg1End).getX() == seg2.getEnd(seg2End).getX();
 }

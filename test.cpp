@@ -15,8 +15,10 @@ void tttttt(A1 *a1) { a1->adda(); }
 int main() {
   A1 a1;
   cout << a1.a;
+
   ttt(a1);
   cout << a1.a;
+
   tttttt(&a1);
   cout << a1.a;
 }
