@@ -33,6 +33,7 @@ class Path {
 
       for (int i = 1; i < amount; i++) {
         Segment now = incomingSegs[i];
+
         if (0) {
         }
       }
