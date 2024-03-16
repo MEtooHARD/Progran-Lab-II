@@ -6,9 +6,13 @@ using namespace std;
 
 class Point {
  public:
-  Point(double _x, double _y);
-  double getX();
-  double getY();
+  int x, y;
+  Point(double _x, double _y) {
+    x = _x;
+    y = _y;
+  };
+  double getX() { return x; };
+  double getY() { return y; };
 };
 
 class Segment {
@@ -18,33 +22,56 @@ class Segment {
   double length();
 };
 
-class Path {
- public:
-  Segment *connectedSegs;
-  int amount;
-  Path(Segment *incomingSegs, int amount) {
-    connectedSegs = (Segment *)malloc(sizeof(Segment *) * amount);
-    this->amount = amount;
-    double length = 0;
-    bool connection = true;
-    int nowChecking = 0, head = 0, tail = 0, headEnd, tailEnd;
-    while (connection && nowChecking < amount) {
-      nowChecking++;
-
-      for (int i = 1; i < amount; i++) {
-        Segment now = incomingSegs[i];
-
-        if (0) {
-        }
-      }
-    }
-  }
-};
-
 bool pointOverlap(Point p1, Point p2) {
   return p1.getX() == p2.getX() && p1.getY() == p2.getY();
 }
 
-bool validConnection(Segment seg1, Segment seg2, int seg1End, int seg2End) {
-  return seg1.getEnd(seg1End).getX() == seg2.getEnd(seg2End).getX();
-}
+int *joinedSegs;
+
+class Path {
+ private:
+  double len = 0;
+  Segment *headSeg, *tailSeg, *segs;
+  int amount;
+
+ public:
+  Path(Segment *incomingSegs, int amount) : segs(incomingSegs), amount(amount) {
+    joinedSegs = (int *)malloc(sizeof(int *) * amount);
+    headSeg = &(incomingSegs[0]);
+    tailSeg = &(incomingSegs[0]);
+
+    for (int i = 0; i < amount; i++) {
+      int next = nextJoinableSeg();
+      if (next) {
+        len += segs[next].length();
+        joinedSegs[next] = 1;
+        (joinable(headSeg, &segs[next]) ? headSeg : tailSeg) = &segs[next];
+      }
+    }
+
+    int c = 0;
+    for (; c < amount; c++)
+      ;
+    if (c == amount && !joinable(headSeg, tailSeg))
+      cout << len;
+    else
+      cout << "-1";
+  }
+
+  // returns -1 if no seg joinable
+  int nextJoinableSeg() {
+    int i = amount - 1;
+    for (; i >= 0; i--) {
+      if (joinedSegs[i]) continue;
+      if (joinable(headSeg, &segs[i]) || joinable(tailSeg, &segs[i])) break;
+    }
+    return i;
+  }
+
+  bool joinable(Segment *seg1, Segment *seg2) {
+    return pointOverlap((seg1->getEnd(0)), (seg2->getEnd(0))) ||
+           pointOverlap((seg1->getEnd(1)), (seg2->getEnd(0))) ||
+           pointOverlap((seg1->getEnd(1)), (seg2->getEnd(1))) ||
+           pointOverlap((seg1->getEnd(0)), (seg2->getEnd(1)));
+  }
+};

@@ -2,23 +2,19 @@
 
 using namespace std;
 
-class A1 {
- public:
-  int a = 0;
-  void adda() { this->a++; }
-};
+bool truee(int *a) {
+  (*a)++;
+  return 1;
+}
 
-void ttt(A1 a1) { a1.adda(); }
-
-void tttttt(A1 *a1) { a1->adda(); }
+void swap(int *a, int *b) {
+  int t = *a;
+  *a = *b;
+  *b = t;
+}
 
 int main() {
-  A1 a1;
-  cout << a1.a;
-
-  ttt(a1);
-  cout << a1.a;
-
-  tttttt(&a1);
-  cout << a1.a;
+  int c = 3, d = 5;
+  swap(&c, &d);
+  cout << c << "\n" << d;
 }
