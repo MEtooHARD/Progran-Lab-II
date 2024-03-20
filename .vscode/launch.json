@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Progran-Lab-II",
-      "program": "c:/Progran-Lab-II/build/Debug/outDebug",
+      "cwd": "c:/Progran-Lab-II/w3",
+      "program": "c:/Progran-Lab-II/w3/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
