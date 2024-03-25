@@ -9,9 +9,9 @@ class Digit {
   Digit(int d) : digit(d) {}
   Digit() {}
   void add(int num) { setDigit(digit + num); }
-  // void setDigit(int d) { digit = d; } // unused
+  void setDigit(int d) { digit = d; }
   int getValue() const { return digit; }
-  // char getChar() { return digit < 10 ? ('0' + digit) : ('A' + digit - 10); } // unused
+  char getChar() { return digit < 10 ? ('0' + digit) : ('A' + digit - 10); }
 };
 
 class Integer {
