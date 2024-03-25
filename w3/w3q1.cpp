@@ -6,9 +6,9 @@ class Digit {  // class Digit represent a digit in base 10
   int digit = 0;
 
  public:
-  Digit(int d) : digit(d % 10){};
-  Digit(){};
-  void setDigit(int d) { digit = d % 10; }
+  Digit(int d) : digit(d){};
+  Digit() { digit = 0; };
+  void setDigit(int d) { digit = d; }
   int getDigit() const { return digit; }
 };
 
@@ -30,10 +30,10 @@ class Integer {  // class Integer represent a poistive integer
  public:
   Integer(string n) {  // the number's ones digit will be at value[x], x >= 0
     int arrow = 0;
-    while (n[arrow] >= '0' && n[arrow] < '9') addDigit(n[arrow++] - '0');
+    while (n[arrow] >= '0' && n[arrow] <= '9') addDigit(n[arrow++] - '0');
   };
 
-  Integer() { value[0] = *(new Digit(0)); }
+  Integer() {}
 
   int getDigits() { return digits; }
 
@@ -55,12 +55,15 @@ class Integer {  // class Integer represent a poistive integer
 
   Integer convertToBase(int base) {
     Integer converted, remainder = *this;
-    cout << "-----------------------------------" << endl;
+    // cout << "-----------------------------------" << endl;
     do {
       DivisionResult result = remainder.divideBy(base);
       converted.insertDigit(result.remainder);
       remainder = *(result.quotient);
-      cout << "---------------" << endl;
+      /*cout << "---------------" << endl;
+      converted.displayAll();*/
+
+      // cout << endl;
     } while (remainder.digit(0).getDigit());
 
     return converted;
@@ -74,18 +77,18 @@ class Integer {  // class Integer represent a poistive integer
 
     while (remainder < dividor && idx < digits - 1)
       remainder = remainder * 10 + digit(++idx).getDigit();
-    cout << "dividend: ";
+    /*cout << "dividend: ";
     displayAll();
-    cout << "\ndividor: " << dividor << endl;
+    cout << "\ndividor: " << dividor << endl;*/
     // cout << "remainder: " << remainder << endl;
     while (idx < digits) {
-      cout << "remainder: " << remainder << endl;
+      // cout << "remainder: " << remainder << endl;
       quotient.addDigit(remainder / dividor);
       remainder %= dividor;
       remainder = remainder * 10 + digit(++idx).getDigit();
-      cout << "quotient: ";
+      /*cout << "quotient: ";
       quotient.displayAll();
-      cout << endl;
+      cout << endl;*/
     }
     remainder /= 10;
 
@@ -93,21 +96,8 @@ class Integer {  // class Integer represent a poistive integer
   }
 
   char digitChar(int digit) {
-    return this->digit(digit).getDigit() < 9
+    return this->digit(digit).getDigit() < 10
                ? ('0' + this->digit(digit).getDigit())
                : ('A' + this->digit(digit).getDigit() - 10);
   }
 };
-
-int main() {
-  string in;
-  int j;
-  cin >> in;
-  Integer i(in);
-  /* for (j = 2; j <= 16; j++) {
-    i.displayInBase(j);
-    cout << endl;
-  } */
-  DivisionResult result = i.divideBy(16);
-  result.quotient->displayAll();
-}

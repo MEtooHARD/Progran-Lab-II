@@ -7,4 +7,7 @@ class a {
   static const int lmao = 0;
 };
 
-int main() {}
+int main() {
+  int a = 9;
+  cout << -a;
+}
