@@ -76,14 +76,15 @@ class Integer {  // class Integer represent a integer
   Digit digit(int digit) { return value[digit]; }
 
   void insertDigit(int num) {
-    for (int i = digits++; i >= 1; i--) value[i] = value[i - 1];
-    value[0] = *(new Digit(num));
+    displace(1);
+    setDigit(0, num);
   }
 
   void display() {
     for (int i = 0; i < digits; i++) cout << digit(i).getChar();
   };
 
+  /* passed */
   void displace(int volume) {
     if (volume > 0) {
       for (int idx = digits + volume - 1; idx >= 0; idx--)
@@ -102,9 +103,6 @@ int main() {
   string a, b;
   cin >> a >> b;
   Integer num1(a), num2(b);
-  // num1.setDigit(2, 6);
-  num1.displace(-3);
-  num1.display();
   // num1.addition(num2).display();
   // cout << endl;
   // num2.addition(num1).display();
