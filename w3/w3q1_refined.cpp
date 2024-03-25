@@ -9,7 +9,8 @@ class Digit {  // class Digit represent a digit in base 10
   Digit(int d) : digit(d){};
   Digit(){};
   void setDigit(int d) { digit = d; }
-  int getDigit() const { return digit; }
+  void add(int num) { setDigit(digit + num); }
+  int getValue() const { return digit; }
   /* supports at highest base 16 otherwise it could bee anti-human to read*/
   char getChar() { return digit < 10 ? ('0' + digit) : ('A' + digit - 10); }
 };
@@ -33,7 +34,7 @@ class Integer {  // class Integer represent a poistive integer
   /* the number's ones digit will be at value[x], x >= 0 */
   Integer(string n) {
     int arrow = 0;
-    while (n[arrow] >= '0' && n[arrow] <= '9') addDigit(n[arrow++] - '0');
+    while (n[arrow] >= '0' && n[arrow] <= '9') appendDigit(n[arrow++] - '0');
   };
 
   /* default: 0 digits */
@@ -46,7 +47,7 @@ class Integer {  // class Integer represent a poistive integer
   Digit digit(int digit) { return value[digit]; }
 
   /* add a digit at the very last of the array and increase digits by 1 */
-  void addDigit(int num) { value[digits++] = *(new Digit(num)); }
+  void appendDigit(int num) { value[digits++] = *(new Digit(num)); }
 
   /* insert a digit at the start of the Integer(highest digit) and increase
    * digits by 1 */
@@ -70,22 +71,22 @@ class Integer {  // class Integer represent a poistive integer
       DivisionResult result = remainder.divideBy(base);
       converted.insertDigit(result.remainder);
       remainder = *(result.quotient);
-    } while (remainder.digit(0).getDigit());
+    } while (remainder.digit(0).getValue());
 
     return converted;
   }
 
   /* divides with given dividor and return quotient and remainder */
   DivisionResult divideBy(int dividor) {
-    int remainder = digit(0).getDigit(), idx = 0;
+    int remainder = digit(0).getValue(), idx = 0;
     Integer quotient;
 
     while (remainder < dividor && idx < digits - 1)
-      remainder = remainder * 10 + digit(++idx).getDigit();
+      remainder = remainder * 10 + digit(++idx).getValue();
     while (idx < digits) {
-      quotient.addDigit(remainder / dividor);
+      quotient.appendDigit(remainder / dividor);
       remainder %= dividor;
-      remainder = remainder * 10 + digit(++idx).getDigit();
+      remainder = remainder * 10 + digit(++idx).getValue();
     }
     remainder /= 10;
 
@@ -100,11 +101,11 @@ class Integer {  // class Integer represent a poistive integer
   void displace(int volume) {
     if (volume > 0) {
       for (int idx = digits + volume - 1; idx >= 0; idx--)
-        setDigit(idx, digit(idx - volume).getDigit());
+        setDigit(idx, digit(idx - volume).getValue());
       for (int i = 0; i < volume; i++) setDigit(i, 0);
     } else if (volume < 0) {
       for (int idx = 0; idx < digits + volume - 1; idx++)
-        setDigit(idx, digit(idx - volume).getDigit());
+        setDigit(idx, digit(idx - volume).getValue());
       for (int i = digits - 1; i >= digits + volume; i--) setDigit(i, 0);
     }
     digits += volume;

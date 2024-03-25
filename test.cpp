@@ -2,12 +2,14 @@
 
 using namespace std;
 
-class a {
+class A {
  public:
-  static const int lmao = 0;
+  int lmao = 0;
 };
 
 int main() {
-  int a = 9;
-  cout << -a;
+  A *a = new A();
+  A b = *a;
+  b.lmao++;
+  cout << a->lmao << endl;
 }
