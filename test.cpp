@@ -8,8 +8,7 @@ class A {
 };
 
 int main() {
-  A *a = new A();
-  A b = *a;
-  b.lmao++;
-  cout << a->lmao << endl;
+  string gg;
+  cin >> gg;
+  cout << gg;
 }
