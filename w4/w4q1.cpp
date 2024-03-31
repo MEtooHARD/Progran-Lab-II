@@ -6,7 +6,7 @@ class Anagram : public string {
   int composition[26] = {};
 
  public:
-  Anagram(string the_world) {  // （確信
+  Anagram(string the_world) /*  : string(the_world) */ {  // （確信
     for (string::iterator it = the_world.begin(); it != the_world.end(); it++)
       if ('a' <= *it && *it <= 'z')
         composition[*it - 'a']++;
@@ -14,12 +14,6 @@ class Anagram : public string {
         composition[*it - 'A']++;
       else
         continue;
-  }
-
-  void printInfo() const {
-    for (int i = 0; i < 26; i++)
-      if (composition[i])
-        cout << (char)('A' + i) << ": " << composition[i] << endl;
   }
 
   int getCharCount(int i) { return composition[i]; }
@@ -33,7 +27,6 @@ class Anagram : public string {
 };
 
 int main() {
-  Anagram ana("monkeys write"), ana2("New York Times");
-
-  cout << (ana == ana2) << endl;
+  Anagram a1("asdawda asdaw");
+  cout << a1;
 }
