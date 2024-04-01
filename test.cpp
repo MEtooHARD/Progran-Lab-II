@@ -1,16 +1,23 @@
+#include <algorithm>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
 class A {
  public:
+  static const int pi = 3;
   int lmao = 0;
+  A(int a) : lmao(a) {}
+
+  /* A(int a) {
+    lmao = a;
+    //
+  } */
 };
 
 int main() {
-  bool a[4] = {1};
-  cout << a[0] << endl;
-  cout << a[1] << endl;
-  cout << a[2] << endl;
-  cout << a[3] << endl;
+  A a();
+  //
+  A::pi;
 }
