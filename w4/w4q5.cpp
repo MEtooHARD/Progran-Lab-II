@@ -84,7 +84,7 @@ class Cell : public Point {
   }
 
   bool operator==(Cell C) { return x == C.getX() && y == C.getY(); }
-  bool operator!=(Cell C) { return !(*this == C); }
+  bool operator!=(Cell C) { return !(x == C.getX() && y == C.getY()); }
 };
 
 class Maze {
@@ -95,27 +95,36 @@ class Maze {
 
  public:
   Maze() {
+    /* initialization */
+    // rows & cols
     cin >> rows >> cols;
     cells = (Cell**)malloc(sizeof(Cell*) * rows);
-    for (int i = 0; i < cols; i++)
+    for (int i = 0; i < rows; i++)
       cells[i] = (Cell*)malloc(sizeof(Cell) * cols);
-
+    // Cells matrix
     for (int i = 0; i < rows; i++)
       for (int j = 0; j < cols; j++) cells[i][j] = *(new Cell(i + 1, j + 1));
-
     pattern = initialPattern();
-
+    // declaration: list & Action
     vector<Cell*> list;
+    char commando;
 
+    /* start point */
     int x, y;
     cin >> x >> y;
     list.push_back(&cells[x - 1][y - 1]);
+    cells[x - 1][y - 1].setVisited();
 
-    char commando;
-
+    /**
+     * Action input: U, R, D, L, F (n)
+     * Depend on Action: "flip" or "add a cell to list and remove wall".
+     * Check surrounding unvisited cells => fit => remove cell from list =>
+     * repeat checking.
+     * Repeat taking Action input till list is empty.
+     * End.
+     */
     while (list.size()) {
       cin >> commando;
-      // cout << "commando: " << commando << endl;
 
       if ((int)commando == (int)Action::F) {
         int nPlace;
@@ -127,31 +136,29 @@ class Maze {
         if (*toAdd != *list.back()) {
           list.push_back(toAdd);
           list.back()->setVisited();
+          removeWall(list.back(), list[list.size() - 2]);
         }
       }
+
+      /* cout << "list: " << endl;
+      for (vector<Cell*>::iterator i = list.begin(); i < list.end(); i++)
+        cout << **i << endl; */
 
       int surroundUnvisited = 0;
       for (int i = 0; i < 4; i++)
         if (!getRelativeCell(list.back(), (Direction)i)->isVisited())
           surroundUnvisited++;
 
-      removeWall(list.back(), list[list.size() - 2]);
-
-      cout << "list: " << endl;
-      for (vector<Cell*>::iterator i = list.begin(); i < list.end(); i++) {
-        cout << **i << endl;
+      while (!surroundUnvisited && list.size()) {
+        // cout << "no unvisited. try pop: " << *list.back() << endl;
+        list.pop_back();
+        surroundUnvisited = 0;
+        for (int i = 0; i < 4 && list.size(); i++)
+          if (!getRelativeCell(list.back(), (Direction)i)->isVisited())
+            surroundUnvisited++;
       }
-
-      if (!surroundUnvisited)
-        while (!surroundUnvisited) {
-          list.pop_back();
-          surroundUnvisited = 0;
-          for (int i = 0; i < 4; i++)
-            if (getRelativeCell(list.back(), (Direction)i)->isVisited())
-              surroundUnvisited++;
-        }
-      print();
-      cout << endl;
+      /* print();
+      cout << endl; */
     }
   }
 
@@ -187,18 +194,20 @@ class Maze {
     }
     x = (x >= 0 && x < rows) ? x : C->getX() - 1;
     y = (y >= 0 && y < cols) ? y : C->getY() - 1;
-
+    // cout << cells[x][y] << ' ' << cells[x][y].isVisited() << endl;
     return &cells[x][y];
   }
 
   void removeWall(Cell* c1, Cell* c2) {
     if (c1 != c2) {
-      cout << "remove: " << *c1 << " ~ " << *c2 << endl;
       int x =
           c1->toPatternCoordinate()->getX() + c2->toPatternCoordinate()->getX();
       int y =
           c1->toPatternCoordinate()->getY() + c2->toPatternCoordinate()->getY();
 
+      /* cout << "remove: " << x / 2 + (c1->getX() != c2->getX()) << ", " << y /
+         2
+           << endl; */
       pattern[x / 2 + (c1->getX() != c2->getX())][y / 2] = ' ';
     }
   }
@@ -218,12 +227,6 @@ int main() {
   for (int i = 0; i < cases; i++) {
     Maze maze;
     maze.print();
+    if (i != cases - 1) cout << endl;
   }
-
-  /* Cell A(3, 3), B(3, 4);
-  cout << A << '\n' << B; */
-  // cin >> cases;
-  /* Cell C(5, 4);
-  Point* cor = C.toPatternCoordinate();
-  cout << '(' << cor->getX() << ", " << cor->getY() << ')' << endl; */
 }
