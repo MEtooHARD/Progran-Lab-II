@@ -4,8 +4,6 @@
 
 using namespace std;
 
-int abs(int num) { return (num < 0) ? -num : num; }
-
 enum class Direction { UP, RIGHT, DOWN, LEFT, NOTASIDE };
 
 enum class Action { F = 'F', U = 'U', D = 'D', L = 'L', R = 'R' };
@@ -52,8 +50,6 @@ class Cell : public Point {
   bool visited = false;
 
  public:
-  // static const int a = 0;
-
   Cell() : Point(1, 1) {}
   Cell(int _x, int _y) : Point(_x, _y) {}
 
@@ -87,6 +83,30 @@ class Cell : public Point {
   bool operator!=(Cell C) { return !(x == C.getX() && y == C.getY()); }
 };
 
+/**
+ * cells: Here the Maze is made up in Cells.
+ * It's rows height, cols wide, visually.
+ *
+ * rows
+ *  3 • • • •
+ *  2 • • • •
+ *  1 • • • •
+ *    1 2 3 4 cols
+ *
+ * pattern: The actual thing be printed. In the Maze process it might be
+ * modified multiple times.
+ *
+ * rows-1
+ *      _   _   _
+ *  2 | _ | _ | _ |
+ *  1 | _ | _ | _ |
+ *  0 | _ | _ | _ |
+ *    0 1 2 3 4 5 6 cols*2 - 1
+ *
+ * The Maze process is based on Cell coordinates. And when involving the
+ * printing pattern it transfers Cell coordinates to pattern coordinates for
+ * sake of safely interacting with pattern.
+ */
 class Maze {
  private:
   int rows, cols;
@@ -126,11 +146,11 @@ class Maze {
     while (list.size()) {
       cin >> commando;
 
-      if ((int)commando == (int)Action::F) {
+      if ((int)commando == (int)Action::F) {  // Flip
         int nPlace;
         cin >> nPlace;
         reverse(list.begin() + nPlace - 1, list.end());
-      } else {
+      } else {  // Go U/R/D/L
         Cell* toAdd = getRelativeCell(
             list.back(), ActToDirect(static_cast<Action>(commando)));
         if (*toAdd != *list.back()) {
@@ -139,26 +159,19 @@ class Maze {
           removeWall(list.back(), list[list.size() - 2]);
         }
       }
-
-      /* cout << "list: " << endl;
-      for (vector<Cell*>::iterator i = list.begin(); i < list.end(); i++)
-        cout << **i << endl; */
-
+      // test surround unvisited
       int surroundUnvisited = 0;
       for (int i = 0; i < 4; i++)
         if (!getRelativeCell(list.back(), (Direction)i)->isVisited())
           surroundUnvisited++;
-
+      // if no unvisited, remove and repeat.
       while (!surroundUnvisited && list.size()) {
-        // cout << "no unvisited. try pop: " << *list.back() << endl;
         list.pop_back();
         surroundUnvisited = 0;
         for (int i = 0; i < 4 && list.size(); i++)
           if (!getRelativeCell(list.back(), (Direction)i)->isVisited())
             surroundUnvisited++;
       }
-      /* print();
-      cout << endl; */
     }
   }
 
@@ -177,6 +190,10 @@ class Maze {
     return pattern;
   }
 
+  /* Returns the Cell aside the gicen C Cell and depend on the given Direction
+   * and the position of C to actual return the real related Cell or the cell at
+   * the same position as C. (for sake of preventing segmentation fault and for
+   * algorithm conveniency) */
   Cell* getRelativeCell(Cell* C, Direction D) {
     int x = C->getX() - 1, y = C->getY() - 1;
     switch (D) {
@@ -194,26 +211,27 @@ class Maze {
     }
     x = (x >= 0 && x < rows) ? x : C->getX() - 1;
     y = (y >= 0 && y < cols) ? y : C->getY() - 1;
-    // cout << cells[x][y] << ' ' << cells[x][y].isVisited() << endl;
     return &cells[x][y];
   }
 
+  /* Removes the wall between the given Cells c1 and c2. It's simply done by
+   * averaging c1 and c2's coordinates. */
   void removeWall(Cell* c1, Cell* c2) {
     if (c1 != c2) {
       int x =
           c1->toPatternCoordinate()->getX() + c2->toPatternCoordinate()->getX();
       int y =
           c1->toPatternCoordinate()->getY() + c2->toPatternCoordinate()->getY();
-
-      /* cout << "remove: " << x / 2 + (c1->getX() != c2->getX()) << ", " << y /
-         2
-           << endl; */
       pattern[x / 2 + (c1->getX() != c2->getX())][y / 2] = ' ';
     }
   }
 
+  /* Print */
   void print() {
-    for (int i = rows; i >= 0; i--) {
+    for (int j = 0; j < cols * 2; j++) cout << pattern[rows][j];
+
+    cout << endl;
+    for (int i = rows - 1; i >= 0; i--) {
       for (int j = 0; j <= cols * 2; j++) cout << pattern[i][j];
       cout << endl;
     }
