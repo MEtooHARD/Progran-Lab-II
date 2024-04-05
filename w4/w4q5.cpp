@@ -35,7 +35,7 @@ class Point {
   void setX(int _x) { x = _x; }
   void setY(int _y) { y = _y; }
 
-  friend std::ostream& operator<<(std::ostream& out, const Point& P) {
+  friend std::ostream &operator<<(std::ostream &out, const Point &P) {
     cout << '(' << P.x << ", " << P.y << ')';
     return out;
   }
@@ -53,9 +53,9 @@ class Cell : public Point {
   Cell() : Point(1, 1) {}
   Cell(int _x, int _y) : Point(_x, _y) {}
 
-  Point* toPatternCoordinate() const { return new Point(x - 1, y * 2 - 1); }
+  Point *toPatternCoordinate() const { return new Point(x - 1, y * 2 - 1); }
 
-  Direction relativeDirect(Cell* T) {
+  Direction relativeDirect(Cell *T) {
     if (x - T->x == 1 && y == T->y)
       return Direction::DOWN;
     else if (T->x - x == 1 && y == T->y)
@@ -72,7 +72,7 @@ class Cell : public Point {
   bool isVisited() { return visited; }
   void print() { cout << '(' << x << ", " << y << ')'; }
 
-  friend std::ostream& operator<<(std::ostream& out, const Cell& C) {
+  friend std::ostream &operator<<(std::ostream &out, const Cell &C) {
     cout << "C: (" << C.x << ", " << C.y << ")  P: ("
          << C.toPatternCoordinate()->getX() << ", "
          << C.toPatternCoordinate()->getY() << ')';
@@ -110,23 +110,23 @@ class Cell : public Point {
 class Maze {
  private:
   int rows, cols;
-  Cell** cells;
-  char** pattern;
+  Cell **cells;
+  char **pattern;
 
  public:
   Maze() {
     /* initialization */
     // rows & cols
     cin >> rows >> cols;
-    cells = (Cell**)malloc(sizeof(Cell*) * rows);
+    cells = (Cell **)malloc(sizeof(Cell *) * rows);
     for (int i = 0; i < rows; i++)
-      cells[i] = (Cell*)malloc(sizeof(Cell) * cols);
+      cells[i] = (Cell *)malloc(sizeof(Cell) * cols);
     // Cells matrix
     for (int i = 0; i < rows; i++)
       for (int j = 0; j < cols; j++) cells[i][j] = *(new Cell(i + 1, j + 1));
     pattern = initialPattern();
     // declaration: list & Action
-    vector<Cell*> list;
+    vector<Cell *> list;
     char commando;
 
     /* start point */
@@ -151,7 +151,7 @@ class Maze {
         cin >> nPlace;
         reverse(list.begin() + nPlace - 1, list.end());
       } else {  // Go U/R/D/L
-        Cell* toAdd = getRelativeCell(
+        Cell *toAdd = getRelativeCell(
             list.back(), ActToDirect(static_cast<Action>(commando)));
         if (*toAdd != *list.back()) {
           list.push_back(toAdd);
@@ -175,10 +175,10 @@ class Maze {
     }
   }
 
-  char** initialPattern() {
-    char** pattern = (char**)malloc(sizeof(char*) * (rows + 1));
+  char **initialPattern() {
+    char **pattern = (char **)malloc(sizeof(char *) * (rows + 1));
     for (int i = 0; i <= rows; i++)
-      pattern[i] = (char*)malloc(sizeof(char) * (cols * 2 + 1));
+      pattern[i] = (char *)malloc(sizeof(char) * (cols * 2 + 1));
 
     // top
     for (int j = 0; j <= cols * 2; j++) pattern[rows][j] = (j % 2) ? '_' : ' ';
@@ -191,10 +191,10 @@ class Maze {
   }
 
   /* Returns the Cell aside the gicen C Cell and depend on the given Direction
-   * and the position of C to actual return the real related Cell or the cell at
-   * the same position as C. (for sake of preventing segmentation fault and for
-   * algorithm conveniency) */
-  Cell* getRelativeCell(Cell* C, Direction D) {
+   * and the position of C to actual return the real related Cell or the cell
+   * at the same position as C. (for sake of preventing segmentation fault and
+   * for algorithm conveniency) */
+  Cell *getRelativeCell(Cell *C, Direction D) {
     int x = C->getX() - 1, y = C->getY() - 1;
     switch (D) {
       case Direction::UP:
@@ -216,7 +216,7 @@ class Maze {
 
   /* Removes the wall between the given Cells c1 and c2. It's simply done by
    * averaging c1 and c2's coordinates. */
-  void removeWall(Cell* c1, Cell* c2) {
+  void removeWall(Cell *c1, Cell *c2) {
     if (c1 != c2) {
       int x =
           c1->toPatternCoordinate()->getX() + c2->toPatternCoordinate()->getX();
