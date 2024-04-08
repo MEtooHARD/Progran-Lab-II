@@ -1,23 +1,25 @@
-#include <algorithm>
 #include <iostream>
-#include <vector>
 
 using namespace std;
 
-class A {
- public:
-  static const int pi = 3;
-  int lmao = 0;
-  A(int a) : lmao(a) {}
+class Dick {
+  void cum() {}
 
-  /* A(int a) {
-    lmao = a;
-    //
-  } */
+  ~Dick() {
+    for (int i = 0; i < 999999999; i++) cum();
+  }
 };
 
 int main() {
-  A a();
-  //
-  A::pi;
+  int** matrix = (int**)malloc(sizeof(int*) * 10);
+
+  for (int i = 0; i < 10; i++) {
+    int* list[10] = {};
+    int* gg;
+    // matrix[i] = list;
+    matrix[i] = gg;
+  }
+
+  for (int i = 0; i < 10; i++)
+    for (int j = 0; j < 10; j++) cout << matrix[i][j];
 }
