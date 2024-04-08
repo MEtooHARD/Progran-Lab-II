@@ -66,6 +66,6 @@ class Date {
 };
 
 int main() {
-  Date d("1900/02/01");
-  cout << d.getDay() << endl;
+  Date c("1900/01/02"), d("1900/02/01");
+  cout << (c - d) << endl;
 }
