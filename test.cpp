@@ -10,16 +10,18 @@ class Dick {
   }
 };
 
-int main() {
-  int** matrix = (int**)malloc(sizeof(int*) * 10);
+class A {
+ public:
+  virtual void foo() {}
+};
 
-  for (int i = 0; i < 10; i++) {
-    int* list[10] = {};
-    int* gg;
-    // matrix[i] = list;
-    matrix[i] = gg;
+class B : public A {
+ public:
+  B() {
+    foo(0);
+    A::foo();
   }
+  void foo(int i) {}
+};
 
-  for (int i = 0; i < 10; i++)
-    for (int j = 0; j < 10; j++) cout << matrix[i][j];
-}
+int main() { A a; }

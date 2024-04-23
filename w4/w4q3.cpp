@@ -103,7 +103,6 @@ Fraction operator-(Fraction F, Fraction G) {
 }
 
 Fraction operator*(Fraction F, Fraction G) {
-  common_ize(&F, &G);
   return *(reduce(new Fraction(F.getNumerator() * G.getNumerator(),
                                F.getDenominator() * G.getDenominator())));
 }

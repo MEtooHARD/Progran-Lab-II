@@ -5,6 +5,9 @@ using namespace std;
 int months[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 bool isOfMultiple(int i, int m) { return !(i % m); }
+bool is_leapyear(int y) {
+  return (y % 4 == 0) && !(y % 100 == 0) || (y % 400 == 0);
+}
 
 class Date {
   int YYYY = 0, MM = 0, DD = 0;
@@ -12,52 +15,24 @@ class Date {
  public:
   Date() : YYYY(1900), MM(1), DD(1){};
 
-  Date(string s) {
-    YYYY += (s[0] - '0') * 1000;
-    YYYY += (s[1] - '0') * 100;
-    YYYY += (s[2] - '0') * 10;
-    YYYY += (s[3] - '0');
-
-    MM += (s[5] - '0') * 10;
-    MM += (s[6] - '0');
-
-    DD += (s[8] - '0') * 10;
-    DD += (s[9] - '0');
-  };
-
-  int getYear() { return YYYY; }
-  int getMonth() { return MM; }
-  int getDate() { return DD; }
+  Date(string s) { sscanf(s.c_str(), "%d/%d/%d", &YYYY, &MM, &DD); };
 
   string toString() const {
-    return to_string(YYYY / 1000)
-        .append(
-            to_string(YYYY / 100 % 10)
-                .append(to_string(YYYY / 10 % 10).append(to_string(YYYY % 10))))
-        .append("/")
-        .append(to_string(MM / 10).append(to_string(MM % 10)))
-        .append("/")
-        .append(to_string(DD / 10).append(to_string(DD % 10)));
+    char result[11];
+    sprintf(result, "%04d/%02d/%02d", YYYY, MM, DD);
+    return result;
   };
 
-  int operator-(const Date& D) const {
-    int diff = getDay() - D.getDay();
-    return diff < 0 ? -diff : diff;
-  };
+  int operator-(const Date& D) const { return abs(getDay() - D.getDay()); };
 
   int getDay() const {
-    int days = -1;
+    int days = (YYYY - 1900) * 365 + DD - 1;
     for (int i = 1900; i < YYYY; i += 4)
-      if (!isOfMultiple(i, 100) || isOfMultiple(i, 400)) days++;
-    days += (YYYY - 1900) * 365;
+      if (is_leapyear(i)) days++;
 
     for (int i = 1; i < MM; i++) days += Date::DaysOfMonth(i);
 
-    days += DD;
-
-    if (isOfMultiple(YYYY, 4) && !isOfMultiple(YYYY, 100) ||
-        isOfMultiple(YYYY, 400) && MM >= 2)
-      days++;
+    if (is_leapyear(YYYY) && MM > 2) days++;
 
     return days;
   }
@@ -66,6 +41,8 @@ class Date {
 };
 
 int main() {
-  Date c("1900/01/02"), d("1900/02/01");
+  string a, b;
+  cin >> a >> b;
+  Date c(a), d(b);
   cout << (c - d) << endl;
 }
