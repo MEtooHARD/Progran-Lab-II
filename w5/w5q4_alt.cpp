@@ -7,22 +7,41 @@
 using namespace std;
 
 class Request {
- public:
-  int topicId;
+  friend class Worker;
   int arrivalTime;
-  int serviceTime;
 
-  Request(int topicId, int arrivalTime, int serviceTime)
-      : topicId(topicId), arrivalTime(arrivalTime), serviceTime(serviceTime) {}
+ public:
+  Request(int arrivalTime) : arrivalTime(arrivalTime) {}
 
   bool available(int time) { return time >= arrivalTime; }
+};
+
+class Topic {
+  int id, amount, arriveTime, task, delay;
+  friend class TaskManager;
+  friend class Worker;
+  queue<Request> requests;
+
+ public:
+  Topic(int id, int amount, int arriveTime, int task, int delay)
+      : id(id),
+        amount(amount),
+        arriveTime(arriveTime),
+        task(task),
+        delay(delay) {
+    for (int i = 0; i < amount; i++) requests.emplace(arriveTime + delay * i);
+  }
+
+  bool requestAvailable(const int time) {
+    return requests.empty() ? false : requests.front().available(time);
+  }
 };
 
 class Worker {
   friend class TaskManager;
   int id, lastAssignedTime = 0, task = 0;
   vector<int> types;
-  bool availble = true;
+  bool availble = true, inQueue = false;
   int appear;
 
  public:
@@ -36,13 +55,13 @@ class Worker {
     };
   }
 
-  bool takeJob(deque<Request> &requsts, const int &time) {
+  bool takeJob(vector<Topic> &timeline, const int &time) {
     for (int i = 0; i < types.size(); i++)
-      for (int j = 0; j < requsts.size(); j++)
-        if (requsts[j].topicId == types[i]) {
+      for (int j = 0; j < timeline.size(); j++)
+        if (timeline[j].requestAvailable(time) && timeline[j].id == types[i]) {
           lastAssignedTime = time;
-          task = requsts[j].serviceTime;
-          requsts.erase(requsts.begin() + j);
+          task = timeline[j].task;
+          timeline[j].requests.pop();
           availble = false;
           return true;
         }
@@ -63,33 +82,20 @@ class Worker {
   }
 };
 
-class Topic {
-  int id, count, arriveTime, duration, delay;
-  friend class TaskManager;
-  queue<Request> requests;
-
- public:
-  Topic() {
-    cin >> id >> count >> arriveTime >> duration >> delay;
-    for (int i = 0; i < count; i++)
-      requests.emplace(id, arriveTime + delay * i, duration);
-  }
-
-  bool requestAvailable(const int time) {
-    return requests.empty() ? false : requests.front().available(time);
-  }
-};
-
 class TaskManager {
   vector<Topic> timeline;
   vector<Worker> workers;
   int time = 0, requestsTaken = 0, totalRequests = 0;
-  deque<Request> availableRequests;
   vector<Worker *> availableWorkers;
 
  public:
   TaskManager(const int count) {
-    for (int i = 0; i < count; i++) timeline.emplace_back();
+    int id, amount, arriveTime, task, delay;
+    for (int i = 0; i < count; i++) {
+      cin >> id >> amount >> arriveTime >> task >> delay;
+      timeline.emplace_back(id, amount, arriveTime, task, delay);
+    }
+
     int worker;
     cin >> worker;
     for (int i = 0; i < worker; i++) workers.emplace_back(i);
@@ -98,40 +104,29 @@ class TaskManager {
   }
 
   void proceed() {
-    // ini
-    for (int i = 0; i < workers.size(); i++) workers[i].update();
-    availableWorkers.clear();
-
-    // collect requests
-    for (int i = 0; i < timeline.size(); i++)
-      if (timeline[i].requestAvailable(time)) {
-        availableRequests.push_back(timeline[i].requests.front());
-        timeline[i].requests.pop();
-      }
-
-    // if (availableRequests.size()) {
     // collect workers
-    for (int i = 0; i < workers.size(); i++)
-      if (workers[i].availble) availableWorkers.push_back(&workers[i]);
-
+    for (int i = 0; i < workers.size(); i++) {
+      workers[i].update();
+      if (workers[i].availble && !workers[i].inQueue) {
+        workers[i].inQueue = true;
+        availableWorkers.push_back(&workers[i]);
+      }
+    }
     // sort workers
     sort(availableWorkers.begin(), availableWorkers.end(), Worker::compare);
-
     // taking jobs
     for (int i = 0; i < availableWorkers.size(); i++)
-      if (availableWorkers[i]->takeJob(availableRequests, time)) {
+      if (availableWorkers[i]->takeJob(timeline, time)) {
+        availableWorkers[i]->inQueue = false;
         availableWorkers.erase(availableWorkers.begin() + i--);
         requestsTaken++;
       }
-    // }
-
     time++;
   }
 
   int getTime() { return time; }
 
   bool finished() {
-    // int
     return requestsTaken == totalRequests &&
            availableWorkers.size() == workers.size();
   }

@@ -1,27 +1,34 @@
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
-class Dick {
-  void cum() {}
+class IntegersReader {
+ private:
+  std::vector<int> numbers;
 
-  ~Dick() {
-    for (int i = 0; i < 999999999; i++) cum();
+ public:
+  // Constructor that takes the number of integers (n) as an argument
+  IntegersReader(int n) : numbers(n) {
+    std::cout << "Enter " << n << " integers:" << std::endl;
+    for (int i = 0; i < n; ++i) {
+      std::cin >> numbers[i];
+    }
+  }
+
+  // Function to display the integers
+  void displayIntegers() {
+    std::cout << "Integers read: ";
+    for (int num : numbers) {
+      std::cout << num << " ";
+    }
+    std::cout << numbers.size() << std::endl;
   }
 };
 
-class A {
- public:
-  virtual void foo() {}
-};
-
-class B : public A {
- public:
-  B() {
-    foo(0);
-    A::foo();
-  }
-  void foo(int i) {}
-};
-
-int main() { A a; }
+int main() {
+  int n;
+  vector<int> nums;
+  nums.reserve(5);
+  cout << nums.size() << nums.empty();
+}
