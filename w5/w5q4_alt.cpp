@@ -55,10 +55,10 @@ class Worker {
     };
   }
 
-  bool takeJob(vector<Topic> &timeline, const int &time) {
+  bool takerequest(vector<Topic> &timeline, const int &time) {
     for (int i = 0; i < types.size(); i++)
       for (int j = 0; j < timeline.size(); j++)
-        if (timeline[j].requestAvailable(time) && timeline[j].id == types[i]) {
+        if (timeline[j].id == types[i] && timeline[j].requestAvailable(time)) {
           lastAssignedTime = time;
           task = timeline[j].task;
           timeline[j].requests.pop();
@@ -116,7 +116,7 @@ class TaskManager {
     sort(availableWorkers.begin(), availableWorkers.end(), Worker::compare);
     // taking jobs
     for (int i = 0; i < availableWorkers.size(); i++)
-      if (availableWorkers[i]->takeJob(timeline, time)) {
+      if (availableWorkers[i]->takerequest(timeline, time)) {
         availableWorkers[i]->inQueue = false;
         availableWorkers.erase(availableWorkers.begin() + i--);
         requestsTaken++;
