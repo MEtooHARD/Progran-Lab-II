@@ -71,5 +71,16 @@ class Shape {
  private:
   Segment seg[10];
   int edgeCount = 0;
+
+ protected:
   double len = 0;
+};
+
+class Rectangle : public Shape {
+ public:
+  Rectangle(Segment *segs) : Shape(segs, 4) {}
+
+  float getArea() override {
+    return getSeg(0).getLength() * getSeg(1).getLength();
+  }
 };
