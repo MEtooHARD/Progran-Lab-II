@@ -64,10 +64,9 @@ class PriorityQueue : public Container {
 };
 
 //------
-
 int judge(Container *c) {
-  c->push(INT_MAX);
-  c->push(INT_MIN);
+  c->push(2);
+  c->push(1);
 
-  return c->top() == INT_MIN ? 1 : 2;
+  return (c->top() == 2) + 1;
 }
