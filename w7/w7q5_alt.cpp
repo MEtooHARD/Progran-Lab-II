@@ -1,11 +1,6 @@
 #include <iostream>
 using namespace std;
 
-template <typename Base, typename T>
-inline bool instanceof (const T *ptr) {
-  return dynamic_cast<const Base *>(ptr) != nullptr;
-}
-
 class Container {
  public:
   virtual void push(int) = 0;
@@ -67,4 +62,9 @@ class PriorityQueue : public Container {
   }
 };
 
-int judge(Container *c) { return instanceof <PriorityQueue>(c) ? 2 : 1; }
+template <typename Base, typename T>
+inline bool instanceof (const T *ptr) {
+  return dynamic_cast<const Base *>(ptr) != nullptr;
+}
+
+int judge(Container *c) { return instanceof <PriorityQueue>(c) + 1; }

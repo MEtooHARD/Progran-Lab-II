@@ -68,5 +68,5 @@ int judge(Container *c) {
   c->push(2);
   c->push(1);
 
-  return (c->top() == 2) + 1;
+  return c->top();
 }

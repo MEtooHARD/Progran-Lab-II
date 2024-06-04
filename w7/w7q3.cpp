@@ -53,9 +53,6 @@ class Set {
     for (int i = 0; i < count; i++)
       if ((includes(element[i]) && set.includes(element[i])))
         newSet.add(element[i]);
-    for (int i = 0; i < set.count; i++)
-      if ((includes(set.element[i]) && set.includes(set.element[i])))
-        newSet.add(set.element[i]);
     return newSet;
   }
 

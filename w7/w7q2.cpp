@@ -24,7 +24,7 @@ class Set {
       if (includes(set.element[i]))
         duplicates++;
       else
-        element[i + count - duplicates] = set.element[i];
+        element[count + i - duplicates] = set.element[i];
     }
     count += set.count - duplicates;
     return set.count - duplicates;
