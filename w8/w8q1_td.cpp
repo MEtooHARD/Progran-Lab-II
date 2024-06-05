@@ -13,6 +13,7 @@ class LinkedList {
     T data;
     Node* next;
   };
+
   LinkedList() : head(nullptr) {}
   ~LinkedList() {
     while (head) {
@@ -21,6 +22,7 @@ class LinkedList {
       delete temp;
     }
   }
+
   bool addFromHead(T d) {
     if (head) {
       head = new Node(head, d);
@@ -29,6 +31,7 @@ class LinkedList {
     }
     return true;
   }
+
   bool addFromTail(T d) {
     if (!head) {
       head = new Node(d);
@@ -39,6 +42,7 @@ class LinkedList {
     }
     return true;
   }
+
   bool removeFromHead() {
     if (head) {
       Node* temp = head;
@@ -48,6 +52,7 @@ class LinkedList {
     }
     return false;
   }
+
   bool removeFromTail() {
     if (head) {
       if (!head->next) {
@@ -63,6 +68,7 @@ class LinkedList {
     }
     return false;
   }
+
   friend ostream& operator<<(ostream& o, LinkedList* l) {
     Node* current = l->head;
     o << "[";
@@ -76,6 +82,7 @@ class LinkedList {
     o << "]";
     return o;
   }
+
   size_t getSize() const {
     size_t size = 0;
     Node* current = head;
@@ -85,6 +92,7 @@ class LinkedList {
     }
     return size;
   }
+
   int searchData(int d) {
     Node* current = head;
     int index = 0;
@@ -97,6 +105,7 @@ class LinkedList {
     }
     return -1;
   }
+
   T operator[](int i) {
     Node* current = head;
     int index = 0;
@@ -126,6 +135,7 @@ class Set : private LinkedList<T> {
     }
     return false;
   }
+
   friend ostream& operator<<(ostream& o, Set<T>* s) {
     if (!s->head) {
       o << "{}\n";
@@ -145,6 +155,7 @@ class Set : private LinkedList<T> {
     o << "}\n";
     return o;
   }
+
   Set<T>* operator+(Set<T>* s) {
     Set<T>* result = new Set<T>();
     typename LinkedList<T>::Node* current = this->head;
@@ -159,6 +170,7 @@ class Set : private LinkedList<T> {
     }
     return result;
   }
+
   Set<T>* operator-(Set<T>* s) {
     Set<T>* result = new Set<T>();
     typename LinkedList<T>::Node* current = this->head;
@@ -170,6 +182,7 @@ class Set : private LinkedList<T> {
     }
     return result;
   }
+
   Set<T>* operator*(Set<T>* s) {
     Set<T>* result = new Set<T>();
     typename LinkedList<T>::Node* current = this->head;

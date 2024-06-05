@@ -10,8 +10,11 @@ class Date {
   bool is_leapyear() {
     return (((y % 4 == 0) && !(y % 100 == 0)) || (y % 400 == 0));
   }
+
   Date(int x) : y(x / 10000), m(x % 10000 / 100), d(x % 100), code(x) {}
+
   bool operator==(Date &d2) { return (code == d2.code); }
+
   int prevDay() {
     int yy = y, mm = m, dd = d;
     m_days[1] = 28;
@@ -31,6 +34,7 @@ class Date {
     }
     return yy * 10000 + mm * 100 + dd;
   }
+
   int nextDay() {
     int yy = y, mm = m, dd = d + 1;
     m_days[1] = 28;
@@ -47,9 +51,11 @@ class Date {
     }
     return yy * 10000 + mm * 100 + dd;
   }
+
   string toString() {
     return to_string(m) + "/" + to_string(d) + "/" + to_string(y);
   }
+
   int getcode() { return code; }
 
  private:
@@ -83,6 +89,7 @@ class Quotesmanager {
     t[d.nextDay()] = 0;
     t[d.prevDay()] = 0;
   }
+
   Quotesmanager(int n, int m) : nx(n), nr(m) {
     t.clear();
     int d1, d2;
@@ -99,16 +106,19 @@ class Quotesmanager {
       record(incoming[i].end);
     }
   }
+
   ~Quotesmanager() {
     exist.clear();
     incoming.clear();
   }
+
   void date_R() {
     for (map<int, int>::iterator it = t.begin(); it != t.end(); it++) {
       it->second = size++;
       date.push_back(it->first);
     }
   }
+
   void show_result() {
     date_R();
     vector<int> mark(size, 0);
