@@ -67,6 +67,7 @@ class AND : public Gate {
     component[0] = new NOT;
     component[1] = new NAND;
   }
+
   virtual bool output() {
     component[1]->input[0] = this->input[0];
     component[1]->input[1] = this->input[1];
@@ -84,6 +85,7 @@ class OR : public Gate {
     component[0] = new NOT;
     component[1] = new NOR;
   }
+
   virtual bool output() {
     component[1]->input[0] = this->input[0];
     component[1]->input[1] = this->input[1];
@@ -101,6 +103,7 @@ class XOR : public Gate {
     component[0] = new OR;
     component[1] = new NAND;
   }
+
   virtual bool output() {
     component[0]->input[0] = this->input[0];
     component[0]->input[1] = this->input[1];
@@ -138,22 +141,26 @@ class Decoder2_4 : public Decoder {
     for (int i = 2; i < 6; i++) component[i] = new AND;
     for (int i = 0; i < 4; i++) enables[i] = new AND;
   }
+
   virtual void setEnable(bool val) {
     if (val)
       this->enable = &t;
     else
       this->enable = &f;
   }
+
   virtual void setEnable(Gate* gate) { this->enable = gate; }
   virtual void setValue(Gate* gate, int i) {
     component[i % 2]->input[0] = gate;
   }
+
   virtual void setValue(bool val, int i) {
     if (val)
       component[i % 2]->input[0] = &t;
     else
       component[i % 2]->input[0] = &f;
   }
+
   virtual Gate* operator[](int n) {
     _out();
     switch (n) {
@@ -169,10 +176,12 @@ class Decoder2_4 : public Decoder {
         return nullptr;
     }
   }
+
   friend ostream& operator<<(ostream& out, Decoder2_4 dec) {
     for (int i = 3; i >= 0; i--) out << dec[i]->output() << " ";
     return out;
   }
+
   virtual int output() {
     for (int i = 0; i < 4; i++)
       if (enables[i]->output()) return i;
@@ -214,34 +223,42 @@ class Decoder4_16 : public Decoder {
     else
       dec2_4[4]->setEnable(false);
   }
+
   virtual void setEnable(bool val) {
     if (val)
       dec2_4[4]->setEnable(true);
     else
       dec2_4[4]->setEnable(false);
   }
+
   virtual void setEnable(Gate* gate) { dec2_4[4]->setEnable(gate); }
+
   virtual void setValue(bool val, int pin) {
     if (pin < 2)
       for (int i = 0; i < 4; i++) dec2_4[i]->setValue(val, pin);
     else
       dec2_4[4]->setValue(val, pin - 2);
   }
+
   virtual void setValue(Gate* gate, int pin) {
     if (pin < 2)
       for (int i = 0; i < 4; i++) dec2_4[i]->setValue(gate, pin);
     else
       dec2_4[4]->setValue(gate, pin - 2);
   }
+
   virtual Gate* operator[](int n) { return (*dec2_4[n / 4])[n % 4]; }
+
   void refresh_dec() {
     for (int i = 0; i < 4; i++) dec2_4[i]->setEnable((*dec2_4[4])[i]->output());
   }
+
   friend ostream& operator<<(ostream& out, Decoder4_16 dec) {
     dec.refresh_dec();
     for (int i = 15; i >= 0; i--) out << dec[i]->output() << " ";
     return out;
   }
+
   virtual int output() {
     for (int i = 0; i < 16; i++)
       if ((*this)[i]->output()) return i;

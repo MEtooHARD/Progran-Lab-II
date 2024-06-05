@@ -127,13 +127,10 @@ class Quotesmanager {
       if (mark[i] == 1) {
         has = 1;
         start = i;
+        if (i + 1 < mark.size() && mark[i + 1] == 1)
+          while (i + 1 < mark.size() && mark[i + 1] == 1) i++;
+
         end = i;
-        if (i + 1 < mark.size() && mark[i + 1] == 1) {
-          while (i + 1 < mark.size() && mark[i + 1] == 1) {
-            i++;
-          }
-          end = i;
-        }
         out.push_back(DateRange(date[start], date[end]));
       }
     }

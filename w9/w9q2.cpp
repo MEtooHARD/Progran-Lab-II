@@ -64,6 +64,7 @@ class AND : public Gate {
     component[0] = new NAND();
     component[1] = new NOT();
   }
+
   virtual bool output() {
     component[0]->setValue(input[0], 0);
     component[0]->setValue(input[1], 1);
@@ -81,6 +82,7 @@ class OR : public Gate {
     component[0] = new NOR();
     component[1] = new NOT();
   }
+
   virtual bool output() {
     component[0]->setValue(input[0], 0);
     component[0]->setValue(input[1], 1);
@@ -99,6 +101,7 @@ class XOR : public Gate {
     component[1] = new NAND();
     component[2] = new AND();
   }
+
   virtual bool output() {
     component[0]->setValue(input[0], 0);
     component[0]->setValue(input[1], 1);
@@ -127,14 +130,17 @@ class OneBitHalfAdder : public Adder {
     component[0] = new XOR();
     component[1] = new AND();
   }
+
   virtual void setValue(bool val, int pin) {
     component[0]->setValue(val, pin);
     component[1]->setValue(val, pin);
   }
+
   virtual void setValue(Gate *gate, int pin) {
     component[0]->setValue(gate, pin);
     component[1]->setValue(gate, pin);
   }
+
   virtual Gate *sum() { return component[0]; }
   virtual Gate *carryOut() { return component[1]; }
 
@@ -149,22 +155,26 @@ class OneBitFullAdder : public Adder {
     a[1] = new OneBitHalfAdder();
     carry = new OR();
   }
+
   virtual void setValue(bool val, int pin) {
     if (pin < 2)
       a[0]->setValue(val, pin);
     else
       a[1]->setValue(val, 0);
   }
+
   virtual void setValue(Gate *gate, int pin) {
     if (pin < 2)
       a[0]->setValue(gate, pin);
     else
       a[1]->setValue(gate, 0);
   }
+
   virtual Gate *sum() {
     a[1]->setValue(a[0]->sum(), 1);
     return a[1]->sum();
   }
+
   virtual Gate *carryOut() {
     a[1]->setValue(a[0]->sum(), 1);
     carry->setValue(a[0]->carryOut(), 0);

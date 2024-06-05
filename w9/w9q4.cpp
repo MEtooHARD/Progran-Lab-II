@@ -1,27 +1,25 @@
 #include <iostream>
-#include <ostream>
-
 using namespace std;
 
 class Gate {
  public:
-  Gate *input[2];
+  Gate* input[2];
   virtual bool output() = 0;
-  void setValue(Gate *, int);
+  void setValue(Gate*, int);
   void setValue(bool, int);
 };
 
 class TRUE : public Gate {
  public:
   virtual bool output() { return 1; }
-  void setValue(Gate *, int) {}
+  void setValue(Gate*, int) {}
   void setValue(bool, int) {}
 };
 
 class FALSE : public Gate {
  public:
   virtual bool output() { return 0; }
-  void setValue(Gate *, int) {}
+  void setValue(Gate*, int) {}
   void setValue(bool, int) {}
 };
 
@@ -35,7 +33,7 @@ void Gate::setValue(bool val, int pin) {
     this->input[pin] = &f;
 }
 
-void Gate::setValue(Gate *gate, int pin) { this->input[pin] = gate; }
+void Gate::setValue(Gate* gate, int pin) { this->input[pin] = gate; }
 
 class NOT : public Gate {
  public:
@@ -46,7 +44,7 @@ class NOT : public Gate {
     else
       this->input[0] = &f;
   }
-  void setValue(Gate *gate, int pin = 0) { this->input[0] = gate; }
+  void setValue(Gate* gate, int pin = 0) { this->input[0] = gate; }
 };
 
 class NAND : public Gate {
@@ -65,75 +63,131 @@ class NOR : public Gate {
 
 class AND : public Gate {
  public:
-  AND() : Gate() {}
-  virtual bool output() {}
+  AND() : Gate() {
+    component[0] = new NOT;
+    component[1] = new NAND;
+  }
+  virtual bool output() {
+    component[1]->input[0] = this->input[0];
+    component[1]->input[1] = this->input[1];
+    component[0]->input[0] = component[1];
+    return component[0]->output();
+  }
 
  private:
-  Gate *component[2];
+  Gate* component[2];
 };
 
 class OR : public Gate {
  public:
-  OR() : Gate() {}
-  virtual bool output() {}
+  OR() : Gate() {
+    component[0] = new NOT;
+    component[1] = new NOR;
+  }
+  virtual bool output() {
+    component[1]->input[0] = this->input[0];
+    component[1]->input[1] = this->input[1];
+    component[0]->input[0] = component[1];
+    return component[0]->output();
+  }
 
  private:
-  Gate *component[2];
+  Gate* component[2];
 };
 
 class XOR : public Gate {
  public:
-  XOR() : Gate() {}
-  virtual bool output() {}
+  XOR() : Gate() {
+    component[0] = new OR;
+    component[1] = new NAND;
+  }
+  virtual bool output() {
+    component[0]->input[0] = this->input[0];
+    component[0]->input[1] = this->input[1];
+    component[1]->input[0] = this->input[0];
+    component[1]->input[1] = this->input[1];
+    return (component[0]->output() && component[1]->output());
+  }
 
  private:
-  Gate *component[5];
+  Gate* component[2];
 };
 
 class Adder {
  public:
   virtual void setValue(bool, int) = 0;
-  virtual void setValue(Gate *, int) = 0;
-  virtual Gate *sum() = 0;
-  virtual Gate *carryOut() = 0;
+  virtual void setValue(Gate*, int) = 0;
+  virtual Gate* sum() = 0;
+  virtual Gate* carryOut() = 0;
 };
 
 class OneBitHalfAdder : public Adder {
  public:
-  OneBitHalfAdder() {}
-  virtual void setValue(bool val, int pin) {}
-  virtual void setValue(Gate *gate, int pin) {}
-  virtual Gate *sum() {}
-  virtual Gate *carryOut() {}
+  OneBitHalfAdder() : Adder() {
+    component[0] = new XOR();
+    component[1] = new AND();
+  }
+  virtual void setValue(bool val, int pin) {
+    component[0]->setValue(val, pin);
+    component[1]->setValue(val, pin);
+  }
+  virtual void setValue(Gate* gate, int pin) {
+    component[0]->setValue(gate, pin);
+    component[1]->setValue(gate, pin);
+  }
+  virtual Gate* sum() { return component[0]; }
+  virtual Gate* carryOut() { return component[1]; }
 
  private:
-  Gate *component[2];
+  Gate* component[2];
 };
 
 class OneBitFullAdder : public Adder {
  public:
-  OneBitFullAdder() {}
-  virtual void setValue(bool val, int pin) {}
-  virtual void setValue(Gate *gate, int pin) {}
-  virtual Gate *sum() {}
-  virtual Gate *carryOut() {}
+  OneBitFullAdder() : Adder() {
+    a[0] = new OneBitHalfAdder();
+    a[1] = new OneBitHalfAdder();
+    carry = new OR();
+  }
+  virtual void setValue(bool val, int pin) {
+    if (pin < 2)
+      a[0]->setValue(val, pin);
+    else
+      a[1]->setValue(val, 0);
+  }
+  virtual void setValue(Gate* gate, int pin) {
+    if (pin < 2)
+      a[0]->setValue(gate, pin);
+    else
+      a[1]->setValue(gate, 0);
+  }
+  virtual Gate* sum() {
+    a[1]->setValue(a[0]->sum(), 1);
+    return a[1]->sum();
+  }
+  virtual Gate* carryOut() {
+    a[1]->setValue(a[0]->sum(), 1);
+    carry->setValue(a[0]->carryOut(), 0);
+    carry->setValue(a[1]->carryOut(), 1);
+    return carry;
+  }
 
  private:
-  Adder *a[2];
-  Gate *carry;
+  Adder* a[2];
+  Gate* carry;
 };
 
 class Decoder {
  public:
   virtual void setValue(bool, int) = 0;
-  virtual void setValue(Gate *, int) = 0;
+  virtual void setValue(Gate*, int) = 0;
   virtual void setEnable(bool) = 0;
-  virtual void setEnable(Gate *) = 0;
+  virtual void setEnable(Gate*) = 0;
   virtual int output() = 0;
-  virtual Gate *operator[](int) = 0;
+  virtual Gate* operator[](int) = 0;
 
  protected:
-  Gate *enable;
+  Gate* enable;
 };
 
 class Decoder2_4 : public Decoder {
@@ -154,8 +208,8 @@ class Decoder2_4 : public Decoder {
     else
       this->enable = &f;
   }
-  virtual void setEnable(Gate *gate) { this->enable = gate; }
-  virtual void setValue(Gate *gate, int i) {
+  virtual void setEnable(Gate* gate) { this->enable = gate; }
+  virtual void setValue(Gate* gate, int i) {
     component[i % 2]->input[0] = gate;
   }
   virtual void setValue(bool val, int i) {
@@ -164,7 +218,7 @@ class Decoder2_4 : public Decoder {
     else
       component[i % 2]->input[0] = &f;
   }
-  virtual Gate *operator[](int n) {
+  virtual Gate* operator[](int n) {
     _out();
     switch (n) {
       case 0:
@@ -179,18 +233,19 @@ class Decoder2_4 : public Decoder {
         return nullptr;
     }
   }
-  friend ostream &operator<<(ostream &out, Decoder2_4 dec) {
+  friend ostream& operator<<(ostream& out, Decoder2_4 dec) {
     for (int i = 3; i >= 0; i--) out << dec[i]->output() << " ";
     return out;
   }
   virtual int output() {
     for (int i = 0; i < 4; i++)
       if (enables[i]->output()) return i;
+    return -1;
   }
 
  private:
-  Gate *component[6];
-  Gate *enables[4];
+  Gate* component[6];
+  Gate* enables[4];
 
   void _out() {
     component[2]->input[0] = component[0];
@@ -214,20 +269,57 @@ class Decoder2_4 : public Decoder {
 
 class Decoder4_16 : public Decoder {
  public:
-  Decoder4_16() {}
-  Decoder4_16(bool val) {}
-  virtual void setEnable(bool val) {}
-  virtual void setEnable(Gate *gate) {}
-  virtual void setValue(bool val, int pin) {}
-  virtual void setValue(Gate *gate, int pin) {}
-  virtual Gate *operator[](int n) {}
-  friend ostream &operator<<(ostream &out, Decoder4_16 dec) {}
-  int output() {}
+  Decoder4_16() : Decoder4_16(0) {}
+  Decoder4_16(bool val) {
+    for (int i = 0; i < 5; i++) dec2_4[i] = new Decoder2_4();
+
+    if (val)
+      dec2_4[4]->setEnable(true);
+    else
+      dec2_4[4]->setEnable(false);
+  }
+  virtual void setEnable(bool val) {
+    if (val)
+      dec2_4[4]->setEnable(true);
+    else
+      dec2_4[4]->setEnable(false);
+  }
+  virtual void setEnable(Gate* gate) { dec2_4[4]->setEnable(gate); }
+  virtual void setValue(bool val, int pin) {
+    if (pin < 2)
+      for (int i = 0; i < 4; i++) dec2_4[i]->setValue(val, pin);
+    else
+      dec2_4[4]->setValue(val, pin - 2);
+  }
+  virtual void setValue(Gate* gate, int pin) {
+    if (pin < 2)
+      for (int i = 0; i < 4; i++) dec2_4[i]->setValue(gate, pin);
+    else
+      dec2_4[4]->setValue(gate, pin - 2);
+  }
+  virtual Gate* operator[](int n) { return (*dec2_4[n / 4])[n % 4]; }
+  void refresh_dec() {
+    for (int i = 0; i < 4; i++) dec2_4[i]->setEnable((*dec2_4[4])[i]->output());
+  }
+  friend ostream& operator<<(ostream& out, Decoder4_16 dec) {
+    dec.refresh_dec();
+    for (int i = 15; i >= 0; i--) out << dec[i]->output() << " ";
+    return out;
+  }
+  virtual int output() {
+    for (int i = 0; i < 16; i++)
+      if ((*this)[i]->output()) return i;
+    return -1;
+  }
 
  private:
-  Decoder *dec2_4[5];
+  Decoder* dec2_4[5];
 };
 
-class FourBitsRippleAdder : public Adder {};
+class FourBitsRippleAdder : public Adder {
+  //
+};
 
-class Decoder5_32 : public Decoder {};
+class Decoder5_32 : public Decoder {
+  //
+};

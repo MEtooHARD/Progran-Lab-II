@@ -64,6 +64,7 @@ class AND : public Gate {
     component[0] = new NAND();
     component[1] = new NOT();
   }
+
   virtual bool output() {
     component[0]->setValue(input[0], 0);
     component[0]->setValue(input[1], 1);
@@ -81,6 +82,7 @@ class OR : public Gate {
     component[0] = new NOR();
     component[1] = new NOT();
   }
+
   virtual bool output() {
     component[0]->setValue(input[0], 0);
     component[0]->setValue(input[1], 1);
@@ -99,6 +101,7 @@ class XOR : public Gate {
     component[1] = new NAND();
     component[2] = new AND();
   }
+
   virtual bool output() {
     component[0]->setValue(input[0], 0);
     component[0]->setValue(input[1], 1);
