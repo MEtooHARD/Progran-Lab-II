@@ -203,11 +203,7 @@ class Mux4_1 : public Mux {
       this->enable = &f;
     mux2_1[0] = new Mux2_1(true);
     mux2_1[1] = new Mux2_1(true);
-    component[0] = new AND;
-    component[1] = new AND;
-    component[2] = new NOT;
-    component[0]->input[0] = component[1];
-    component[0]->input[1] = component[2];
+    mux2_1[2] = new Mux2_1(true);
   }
   virtual void setData(bool val, int pin) {
     mux2_1[pin / 2]->setData(val, pin % 2);
@@ -216,23 +212,19 @@ class Mux4_1 : public Mux {
     mux2_1[pin / 2]->setData(gate, pin % 2);
   }
   virtual void setSelect(bool val, int pin) {
-    if (pin == 0) {
-      mux2_1[0]->setSelect(val, pin);
-      mux2_1[1]->setSelect(val, pin);
+    if (!pin) {
+      mux2_1[0]->setSelect(val, 0);
+      mux2_1[1]->setSelect(val, 0);
     } else {
-      component[1]->setValue(val, 1);
-      component[2]->setValue(val, 0);
-      component[0]->input[1] = component[2];
+      mux2_1[2]->setSelect(val, 0);
     }
   }
   virtual void setSelect(Gate *gate, int pin) {
-    if (pin == 0) {
-      mux2_1[0]->setSelect(gate, pin);
-      mux2_1[1]->setSelect(gate, pin);
+    if (!pin) {
+      mux2_1[0]->setSelect(gate, 0);
+      mux2_1[1]->setSelect(gate, 0);
     } else {
-      component[1]->setValue(gate, 1);
-      component[2]->setValue(gate, 0);
-      component[0]->input[1] = component[2];
+      mux2_1[2]->setSelect(gate, 0);
     }
   }
   virtual void setEnable(bool val) {
@@ -243,15 +235,12 @@ class Mux4_1 : public Mux {
   }
   virtual void setEnable(Gate *gate) { this->enable = gate; }
   virtual Gate *output() {
-    Gate *out = new OR;
-    component[0]->setValue(mux2_1[0]->output(), 0);
-    component[1]->setValue(mux2_1[1]->output(), 0);
-    out->input[0] = component[0];
-    out->input[1] = component[1];
-    return out;
+    mux2_1[2]->setData(mux2_1[0]->output(), 0);
+    mux2_1[2]->setData(mux2_1[1]->output(), 1);
+    mux2_1[2]->setEnable(this->enable);
+    return mux2_1[2]->output();
   }
 
  private:
-  Mux *mux2_1[2];
-  Gate *component[3];
+  Mux *mux2_1[3];
 };
